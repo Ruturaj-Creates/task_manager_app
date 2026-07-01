@@ -40,9 +40,9 @@ def update_task(body:TaskSchema,task_id:int,db:Session):
     if not task:
         raise HTTPException(status_code=404,detail="task id is incorrect")
     
-    task.title=body.title
-    task.description=body.description
-    task.is_completed=body.is_completed
+    body = body.model_dump()
+    for field,value in body.items():
+        setattr(task,field,value)
 
     db.add(task)
     db.commit()
