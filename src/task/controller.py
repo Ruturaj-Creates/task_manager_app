@@ -29,8 +29,26 @@ def get_tasks(db:Session):
 def get_one_task(task_id: int,db: Session):
     task= db.query(TaskModel).get(task_id)
     if not task:
-        return HTTPException(status_code=404,detail="task id is incorrect")
+        raise HTTPException(status_code=404,detail="task id is incorrect")
     return{
         "status":"task fetched successfully",
         "data": task
+    }
+
+def update_task(body:TaskSchema,task_id:int,db:Session):
+    task= db.query(TaskModel).get(task_id)
+    if not task:
+        raise HTTPException(status_code=404,detail="task id is incorrect")
+    
+    task.title=body.title
+    task.description=body.description
+    task.is_completed=body.is_completed
+
+    db.add(task)
+    db.commit()
+    db.refresh(task)
+
+    return {
+        "details":"Task updated successfully",
+        "data":task
     }
